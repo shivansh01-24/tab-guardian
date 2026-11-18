@@ -1,0 +1,269 @@
+/* Tab Guardian - Overlay & 3D Stage Styles */
+
+#tab-guardian-root {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 2147483647 !important;
+  pointer-events: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  background: radial-gradient(circle at center, rgba(15, 23, 42, 0.78) 0%, rgba(2, 6, 23, 0.92) 100%) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+  color: #ffffff !important;
+  opacity: 0;
+  transition: opacity 0.35s ease-out !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+#tab-guardian-root.tg-visible {
+  opacity: 1 !important;
+}
+
+#tab-guardian-root * {
+  box-sizing: border-box !important;
+  user-select: none !important;
+}
+
+/* Floating Banner Header */
+.tg-header-badge {
+  position: absolute !important;
+  top: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  background: rgba(30, 41, 59, 0.85) !important;
+  border: 1px solid rgba(148, 163, 184, 0.25) !important;
+  border-radius: 9999px !important;
+  padding: 8px 20px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important;
+  animation: tgFadeDown 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+.tg-header-icon {
+  width: 22px !important;
+  height: 22px !important;
+  background: #ea580c !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+}
+
+.tg-header-text {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.3px !important;
+  color: #ffedd5 !important;
+}
+
+.tg-header-timer {
+  background: #ea580c !important;
+  color: #fff !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  padding: 2px 8px !important;
+  border-radius: 9999px !important;
+}
+
+/* 3D Stage Container */
+.tg-stage-container {
+  position: relative !important;
+  width: 100vw !important;
+  height: 480px !important;
+  max-height: 65vh !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: none !important;
+}
+
+.tg-canvas-holder {
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: none !important;
+}
+
+.tg-canvas-holder canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+}
+
+/* Cartoon Speech Bubble */
+.tg-speech-bubble {
+  position: absolute !important;
+  bottom: 300px !important;
+  left: 42% !important;
+  transform: translateX(-50%) scale(0) !important;
+  background: #ffffff !important;
+  color: #0f172a !important;
+  padding: 16px 24px !important;
+  border-radius: 20px !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), 0 0 0 3.5px #f97316 !important;
+  max-width: 380px !important;
+  text-align: center !important;
+  pointer-events: none !important;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease !important;
+  opacity: 0 !important;
+  z-index: 10 !important;
+}
+
+.tg-speech-bubble.tg-bubble-show {
+  transform: translateX(-50%) scale(1) !important;
+  opacity: 1 !important;
+}
+
+.tg-speech-bubble::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: -14px !important;
+  left: 35% !important;
+  transform: translateX(-50%) !important;
+  border-width: 14px 12px 0 12px !important;
+  border-style: solid !important;
+  border-color: #ffffff transparent transparent transparent !important;
+  display: block !important;
+  width: 0 !important;
+}
+
+.tg-speech-title {
+  display: block !important;
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  line-height: 1.35 !important;
+  margin-bottom: 4px !important;
+}
+
+.tg-speech-sub {
+  display: block !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #64748b !important;
+}
+
+/* Glowing [X] Cross Button for the mascot to stomp */
+.tg-cross-button {
+  position: absolute !important;
+  right: 29% !important;
+  bottom: 70px !important;
+  width: 84px !important;
+  height: 84px !important;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #991b1b 100%) !important;
+  border: 4px solid #fecaca !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 35px rgba(239, 68, 68, 0.75), 0 10px 20px rgba(0, 0, 0, 0.5) !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease !important;
+  z-index: 10 !important;
+  animation: tgPulseGlow 1.8s infinite alternate ease-in-out !important;
+}
+
+.tg-cross-button svg {
+  width: 36px !important;
+  height: 36px !important;
+  stroke: #ffffff !important;
+  stroke-width: 3.5 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+  fill: none !important;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4)) !important;
+}
+
+.tg-cross-label {
+  font-size: 9px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.8px !important;
+  text-transform: uppercase !important;
+  margin-top: 1px !important;
+  color: #fee2e2 !important;
+}
+
+/* Button Click Stomp Animation State */
+.tg-cross-button.tg-stomped {
+  transform: scale(0.82) translateY(6px) !important;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  border-color: #a7f3d0 !important;
+  box-shadow: 0 0 50px rgba(16, 185, 129, 0.95), 0 0 100px rgba(16, 185, 129, 0.6) !important;
+}
+
+/* Stomp Shockwave Wave */
+.tg-shockwave {
+  position: absolute !important;
+  width: 90px !important;
+  height: 90px !important;
+  border-radius: 50% !important;
+  border: 3px solid #10b981 !important;
+  opacity: 0;
+  pointer-events: none !important;
+}
+
+.tg-shockwave.tg-fire-shockwave {
+  animation: tgRipple 0.6s ease-out forwards !important;
+}
+
+/* Ground shadow below characters */
+.tg-ground-line {
+  position: absolute !important;
+  bottom: 30px !important;
+  width: 80% !important;
+  max-width: 900px !important;
+  height: 3px !important;
+  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.4), transparent) !important;
+  border-radius: 50% !important;
+  filter: blur(1px) !important;
+}
+
+/* Keyframe Animations */
+@keyframes tgFadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tgPulseGlow {
+  0% {
+    box-shadow: 0 0 25px rgba(239, 68, 68, 0.6), 0 8px 18px rgba(0, 0, 0, 0.4);
+    transform: scale(1);
+  }
+  100% {
+    box-shadow: 0 0 45px rgba(239, 68, 68, 0.9), 0 12px 24px rgba(0, 0, 0, 0.5);
+    transform: scale(1.06);
+  }
+}
+
+@keyframes tgRipple {
+  0% {
+    transform: scale(0.9);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+}

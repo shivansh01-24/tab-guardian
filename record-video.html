@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tab Guardian - Video Recorder</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    #master-canvas {
+      width: 1280px;
+      height: 720px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+      border-radius: 8px;
+    }
+    #status {
+      margin-top: 16px;
+      font-size: 14px;
+      color: #fb923c;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="master-canvas" width="1280" height="720"></canvas>
+  <div id="status">Initializing 3D Video Recording...</div>
+
+  <!-- Hidden Three.js container for offscreen rendering -->
+  <div id="three-container" style="position: absolute; left: -9999px; width: 1280px; height: 720px;"></div>
+
+  <script src="lib/three.min.js"></script>
+  <script src="scripts/character-engine.js"></script>
+  <script>
+    const canvas = document.getElementById('master-canvas');
+    const ctx = canvas.getContext('2d');
+    const statusDiv = document.getElementById('status');
+    const threeContainer = document.getElementById('three-container');
+
+    // Setup Three.js Stage
+    const threeStage = new window.TabGuardian3D.MascotStage(threeContainer);
+    const mascot = threeStage.loadMascot('robot');
+    threeStage.start();
+
+    // Video Recording Setup
+    const stream = canvas.captureStream(30);
+    const mediaRecorder = new MediaRecorder(stream, {
+      mimeType: 'video/webm;codecs=vp9',
+      videoBitsPerSecond: 5000000
+    });
+    const recordedChunks = [];
+
+    mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) recordedChunks.push(e.data);
+    };
+
+    mediaRecorder.onstop = async () => {
+      statusDiv.textContent = 'Recording complete. Uploading to server...';
+      const blob = new Blob(recordedChunks, { type: 'video/webm' });
+      try {
+        const res = await fetch('/save-video', {
+          method: 'POST',
+          headers: { 'Content-Type': 'video/webm' },
+          body: blob
+        });
+        const result = await res.json();
+        statusDiv.textContent = result.message || 'Video saved and converted to MP4!';
+        window.__RECORDING_FINISHED__ = true;
+      } catch (err) {
+        statusDiv.textContent = 'Upload failed: ' + err.message;
+        window.__RECORDING_ERROR__ = err.message;
+      }
+    };
+
+    // Animation & Choreography Timing
+    const totalDuration = 10.5; // seconds
+    let startTime = null;
+
+    // Button state
+    let isStomped = false;
+    let shockwaveRadius = 0;
+    let shockwaveAlpha = 0;
+
+    // Helper: Rounded Rectangle
+    function roundRect(ctx, x, y, w, h, r) {
+      if (w < 2 * r) r = w / 2;
+      if (h < 2 * r) r = h / 2;
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+
+    function renderFrame(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const elapsed = (timestamp - startTime) / 1000;
+
+      // 1. Draw Simulated Background
+      const bgGrad = ctx.createRadialGradient(640, 360, 50, 640, 360, 700);
+      bgGrad.addColorStop(0, '#24150c');
+      bgGrad.addColorStop(1, '#0c0704');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, 1280, 720);
+
+      // Simulated Instagram Grid (Blurred out in background)
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+      for (let row = 0; row < 3; row++) {
+        for (let col = 0; col < 5; col++) {
+          const gx = 100 + col * 220;
+          const gy = 160 + row * 200;
+          roundRect(ctx, gx, gy, 190, 170, 12);
+          ctx.fill();
+        }
+      }
+
+      // Dark Blur Overlay Vignette
+      ctx.fillStyle = 'rgba(12, 7, 4, 0.88)';
+      ctx.fillRect(0, 0, 1280, 720);
+
+      // 2. Draw Incognito Browser Chrome Bar
+      ctx.fillStyle = '#18110b';
+      ctx.fillRect(0, 0, 1280, 75);
+      ctx.strokeStyle = '#382012';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, 75);
+      ctx.lineTo(1280, 75);
+      ctx.stroke();
+
+      // Incognito Tab
+      ctx.fillStyle = '#29180e';
+      roundRect(ctx, 24, 10, 240, 34, 8);
+      ctx.fill();
+      ctx.fillStyle = '#fdba74';
+      ctx.font = 'bold 13px -apple-system, sans-serif';
+      ctx.fillText('🕶️ Incognito — Instagram', 40, 32);
+
+      // URL Bar
+      ctx.fillStyle = '#23150d';
+      ctx.strokeStyle = '#432615';
+      roundRect(ctx, 280, 10, 720, 34, 17);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#ea580c';
+      ctx.font = '13px sans-serif';
+      ctx.fillText('🔒', 300, 32);
+      ctx.fillStyle = '#ffedd5';
+      ctx.font = '500 13px -apple-system, sans-serif';
+      ctx.fillText('https://www.instagram.com/explore', 324, 32);
+
+      // 3. Draw Top Blocked Banner Pill
+      const remainingSeconds = Math.max(0, Math.ceil(totalDuration - elapsed));
+      ctx.save();
+      ctx.fillStyle = 'rgba(35, 22, 14, 0.95)';
+      ctx.strokeStyle = '#542f1a';
+      roundRect(ctx, 420, 95, 440, 42, 21);
+      ctx.fill();
+      ctx.stroke();
+
+      // Cross Icon
+      ctx.fillStyle = '#ea580c';
+      ctx.beginPath();
+      ctx.arc(442, 116, 11, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.fillText('✕', 438, 120);
+
+      // Banner Text
+      ctx.fillStyle = '#ffedd5';
+      ctx.font = '600 14px -apple-system, sans-serif';
+      ctx.fillText('Blocked Site Detected: instagram.com', 464, 121);
+
+      // Timer Badge
+      ctx.fillStyle = '#ea580c';
+      roundRect(ctx, 796, 105, 46, 22, 11);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 12px sans-serif';
+      ctx.fillText(remainingSeconds + 's', 808, 120);
+      ctx.restore();
+
+      // 4. Ground Glow Line
+      const groundGrad = ctx.createLinearGradient(200, 640, 1080, 640);
+      groundGrad.addColorStop(0, 'transparent');
+      groundGrad.addColorStop(0.5, 'rgba(249, 115, 22, 0.45)');
+      groundGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = groundGrad;
+      ctx.fillRect(200, 638, 880, 4);
+
+      // 5. Draw Three.js Canvas
+      if (threeStage.renderer && threeStage.renderer.domElement) {
+        ctx.drawImage(threeStage.renderer.domElement, 0, 0, 1280, 720);
+      }
+
+      // 6. Draw Speech Bubble (Visible between 2.2s and 5.7s)
+      if (elapsed >= 2.2 && elapsed <= 5.7) {
+        const bubbleElapsed = elapsed - 2.2;
+        let scale = 1;
+        if (bubbleElapsed < 0.25) {
+          scale = bubbleElapsed / 0.25; // Pop in
+        } else if (elapsed > 5.4) {
+          scale = Math.max(0, (5.7 - elapsed) / 0.3); // Pop out
+        }
+
+        ctx.save();
+        ctx.translate(530, 270);
+        ctx.scale(scale, scale);
+
+        // Bubble Box
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+        ctx.shadowBlur = 25;
+        roundRect(ctx, -190, -70, 380, 95, 22);
+        ctx.fill();
+
+        // Glowing Orange Border
+        ctx.strokeStyle = '#f97316';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+
+        // Pointer
+        ctx.beginPath();
+        ctx.moveTo(-20, 25);
+        ctx.lineTo(0, 45);
+        ctx.lineTo(20, 25);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+
+        // Speech Text
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = '#0f172a';
+        ctx.font = '800 18px -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Be a good person, close that tab!', 0, -28);
+
+        ctx.fillStyle = '#64748b';
+        ctx.font = '500 13px -apple-system, sans-serif';
+        ctx.fillText('Doomscrolling detected. Focus on what matters.', 0, -4);
+        ctx.restore();
+      }
+
+      // 7. Draw Glowing [X] Cross Button
+      const btnX = 940;
+      const btnY = 560;
+      const btnR = 44;
+
+      // Shockwave ring
+      if (isStomped && shockwaveAlpha > 0) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(btnX, btnY, shockwaveRadius, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(16, 185, 129, ${shockwaveAlpha})`;
+        ctx.lineWidth = 5;
+        ctx.stroke();
+        ctx.restore();
+        shockwaveRadius += 4;
+        shockwaveAlpha -= 0.04;
+      }
+
+      ctx.save();
+      ctx.translate(btnX, btnY);
+      if (isStomped) {
+        ctx.scale(0.85, 0.85);
+      }
+
+      // Button Shadow & Glow
+      ctx.shadowColor = isStomped ? 'rgba(16, 185, 129, 0.9)' : 'rgba(239, 68, 68, 0.85)';
+      ctx.shadowBlur = isStomped ? 45 : 30;
+
+      // Button Background
+      const btnGrad = ctx.createLinearGradient(-btnR, -btnR, btnR, btnR);
+      if (isStomped) {
+        btnGrad.addColorStop(0, '#10b981');
+        btnGrad.addColorStop(1, '#059669');
+      } else {
+        btnGrad.addColorStop(0, '#ef4444');
+        btnGrad.addColorStop(1, '#991b1b');
+      }
+      ctx.fillStyle = btnGrad;
+      ctx.beginPath();
+      ctx.arc(0, 0, btnR, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Border
+      ctx.strokeStyle = isStomped ? '#a7f3d0' : '#fecaca';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      // Cross or Check Icon
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      if (isStomped) {
+        // Checkmark
+        ctx.moveTo(-16, 2);
+        ctx.lineTo(-4, 14);
+        ctx.lineTo(18, -12);
+      } else {
+        // Cross [X]
+        ctx.moveTo(-14, -14);
+        ctx.lineTo(14, 14);
+        ctx.moveTo(14, -14);
+        ctx.lineTo(-14, 14);
+      }
+      ctx.stroke();
+
+      // Label below icon
+      ctx.fillStyle = isStomped ? '#d1fae5' : '#fee2e2';
+      ctx.font = 'bold 9px -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(isStomped ? 'DONE!' : 'CLOSE', 0, 26);
+      ctx.restore();
+
+      // 8. Tab Closure Yeet Overlay (After 9.2s when mascot vanished)
+      if (elapsed >= 9.2) {
+        const closeProgress = Math.min((elapsed - 9.2) / 0.8, 1);
+        ctx.fillStyle = `rgba(0, 0, 0, ${closeProgress * 0.95})`;
+        ctx.fillRect(0, 0, 1280, 720);
+
+        ctx.save();
+        ctx.translate(640, 360);
+        ctx.scale(closeProgress, closeProgress);
+        ctx.fillStyle = '#ffedd5';
+        ctx.font = 'bold 36px -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🛡️ TAB CLOSED AUTOMATICALLY', 0, -20);
+
+        ctx.fillStyle = '#fb923c';
+        ctx.font = '600 18px -apple-system, sans-serif';
+        ctx.fillText('Tab Guardian protected your focus. Be a good person!', 0, 25);
+        ctx.restore();
+      }
+
+      if (elapsed < totalDuration) {
+        requestAnimationFrame(renderFrame);
+      } else {
+        mediaRecorder.stop();
+      }
+    }
+
+    // Start 3D Choreography and Recording
+    statusDiv.textContent = 'Recording 3D Mascot Demonstration in progress...';
+    mediaRecorder.start();
+
+    threeStage.runChoreography({
+      onSpeechStart: () => {},
+      onSpeechEnd: () => {},
+      onButtonClick: () => {
+        isStomped = true;
+        shockwaveRadius = 45;
+        shockwaveAlpha = 1.0;
+      },
+      onFadeOut: () => {},
+      onComplete: () => {}
+    });
+
+    requestAnimationFrame(renderFrame);
+  </script>
+</body>
+</html>

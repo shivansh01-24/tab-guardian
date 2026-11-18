@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tab Guardian - 3D Mascot Demonstration (Incognito)</title>
+  <link rel="stylesheet" href="overlay.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at center, #26170d 0%, #0f0905 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #fff7ed;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      overflow-x: hidden;
+    }
+
+    /* Incognito Fake Browser Chrome Bar */
+    .incognito-browser-bar {
+      width: 100%;
+      background: #1c1511;
+      border-bottom: 1px solid #3c2415;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    .incognito-tag {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fb923c;
+      background: rgba(249, 115, 22, 0.12);
+      border: 1px solid rgba(249, 115, 22, 0.3);
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    .incognito-url-bar {
+      flex: 1;
+      max-width: 480px;
+      margin: 0 16px;
+      background: #2b1b12;
+      border: 1px solid #482a17;
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 12px;
+      color: #fdba74;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .incognito-url-lock {
+      font-size: 11px;
+      color: #ea580c;
+    }
+
+    .incognito-avatar {
+      font-size: 18px;
+      background: #361f13;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #57331b;
+    }
+
+    /* Main Container */
+    .playground-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 16px;
+      width: 100%;
+    }
+
+    .demo-card {
+      background: rgba(36, 23, 15, 0.85);
+      backdrop-filter: blur(20px);
+      border: 1.5px solid #4a2b17;
+      border-radius: 24px;
+      padding: 36px 32px;
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 40px rgba(234, 88, 12, 0.15);
+    }
+
+    .demo-icon {
+      font-size: 54px;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 4px 12px rgba(249, 115, 22, 0.4));
+    }
+
+    h1 {
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #fed7aa 0%, #fb923c 50%, #ea580c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.3px;
+    }
+
+    p {
+      color: #fed7aa;
+      font-size: 13.5px;
+      line-height: 1.6;
+      margin-bottom: 24px;
+      opacity: 0.9;
+    }
+
+    .btn-group {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .btn {
+      padding: 13px 12px;
+      border-radius: 12px;
+      border: 1px solid #5a341c;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-icon {
+      font-size: 24px;
+    }
+
+    .btn-robot {
+      background: #0284c7;
+      color: white;
+      border-color: #38bdf8;
+    }
+    .btn-robot:hover { background: #0369a1; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(2, 132, 199, 0.5); }
+
+    .btn-detective {
+      background: #b45309;
+      color: white;
+      border-color: #f59e0b;
+    }
+    .btn-detective:hover { background: #92400e; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(217, 119, 6, 0.5); }
+
+    .btn-cat {
+      background: #ea580c;
+      color: white;
+      border-color: #fb923c;
+    }
+    .btn-cat:hover { background: #c2410c; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(234, 88, 12, 0.5); }
+
+    .btn-full {
+      width: 100%;
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 50%, #c2410c 100%);
+      color: white;
+      padding: 15px 22px;
+      font-size: 14px;
+      font-weight: 800;
+      border: 1px solid #fdba74;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+      box-shadow: 0 8px 24px rgba(234, 88, 12, 0.45);
+      transition: all 0.2s ease;
+    }
+    .btn-full:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(234, 88, 12, 0.65); }
+
+    .freeze-bar {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .btn-freeze {
+      flex: 1;
+      padding: 8px 10px;
+      background: #2d1c12;
+      border: 1px solid #482a17;
+      color: #fdba74;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-freeze:hover { background: #482a17; color: #fff; }
+
+    .instructions {
+      font-size: 12px;
+      color: #fed7aa;
+      opacity: 0.7;
+      margin-top: 18px;
+      border-top: 1px solid rgba(251, 146, 60, 0.2);
+      padding-top: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Incognito Safe Header (Zero personal user details leaked) -->
+  <div class="incognito-browser-bar">
+    <div class="incognito-tag">
+      <span>🕶️</span> Incognito Mode (Safe Demo)
+    </div>
+    <div class="incognito-url-bar">
+      <span class="incognito-url-lock">🔒</span>
+      <span>https://instagram.com/explore (Blocked Pattern Detected)</span>
+    </div>
+    <div class="incognito-avatar">🛡️</div>
+  </div>
+
+  <div class="playground-wrapper">
+    <div class="demo-card">
+      <div class="demo-icon">🛡️</div>
+      <h1>Tab Guardian 3D Mascot Playground</h1>
+      <p>Paced demonstration: Mascot walks in smoothly, pauses to deliver the humorous reminder, walks to the [X] button, stomps it with anticipation, and vanishes!</p>
+
+      <div class="btn-group">
+        <button class="btn btn-robot" onclick="triggerMascot('robot')">
+          <span class="btn-icon">🤖</span>
+          <span>Guardian Robot</span>
+        </button>
+        <button class="btn btn-detective" onclick="triggerMascot('detective')">
+          <span class="btn-icon">🕵️</span>
+          <span>Chibi Detective</span>
+        </button>
+        <button class="btn btn-cat" onclick="triggerMascot('cat')">
+          <span class="btn-icon">🐱</span>
+          <span>Wise Cat</span>
+        </button>
+      </div>
+
+      <button class="btn-full" onclick="triggerMascot('random')">
+        🎲 Launch Full ~10s Tab Closer Choreography
+      </button>
+
+      <div class="freeze-bar">
+        <button class="btn-freeze" onclick="inspectMascot('robot', 'speech')">Robot Speech</button>
+        <button class="btn-freeze" onclick="inspectMascot('detective', 'speech')">Detective Speech</button>
+        <button class="btn-freeze" onclick="inspectMascot('cat', 'speech')">Wise Cat Speech</button>
+        <button class="btn-freeze" onclick="inspectMascot('robot', 'stomp')">Button Stomp</button>
+      </div>
+
+      <div class="instructions">
+        Watch the character walk in from left, deliver the reminder, stomp the red [X] button, and vanish!
+      </div>
+    </div>
+  </div>
+
+  <script src="lib/three.min.js"></script>
+  <script src="scripts/character-engine.js"></script>
+  <script>
+    let activeStage = null;
+    let activeInterval = null;
+
+    function cleanupOverlay() {
+      if (activeInterval) clearInterval(activeInterval);
+      if (activeStage) {
+        activeStage.destroy();
+        activeStage = null;
+      }
+      const existing = document.getElementById('tab-guardian-root');
+      if (existing) existing.remove();
+    }
+
+    function createOverlayDOM(chosenMessage) {
+      cleanupOverlay();
+
+      const root = document.createElement('div');
+      root.id = 'tab-guardian-root';
+      root.innerHTML = `
+        <div class="tg-header-badge">
+          <div class="tg-header-icon">✕</div>
+          <span class="tg-header-text">Blocked Site Detected: instagram.com</span>
+          <span class="tg-header-timer" id="tg-timer-display">10s</span>
+        </div>
+
+        <div class="tg-stage-container">
+          <div class="tg-ground-line"></div>
+          <div class="tg-canvas-holder" id="tg-canvas-holder"></div>
+
+          <div class="tg-speech-bubble" id="tg-speech-bubble">
+            <span class="tg-speech-title">${chosenMessage}</span>
+            <span class="tg-speech-sub">Focus on what matters. Closing tab in 10s...</span>
+          </div>
+
+          <button class="tg-cross-button" id="tg-cross-btn" title="Click to close tab immediately">
+            <svg viewBox="0 0 24 24">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+            <span class="tg-cross-label" id="tg-btn-label">CLOSE</span>
+            <div class="tg-shockwave" id="tg-shockwave"></div>
+          </button>
+        </div>
+      `;
+
+      document.body.appendChild(root);
+      requestAnimationFrame(() => root.classList.add('tg-visible'));
+
+      return root;
+    }
+
+    function triggerMascot(mascotType) {
+      const messages = [
+        "Be a good person, close that tab!",
+        "No doomscrolling! Close this tab and stay focused.",
+        "Future you will thank you! Closing tab now.",
+        "Be a good person! You have bigger dreams than this."
+      ];
+      const chosenMessage = messages[Math.floor(Math.random() * messages.length)];
+      const root = createOverlayDOM(chosenMessage);
+
+      const canvasHolder = document.getElementById('tg-canvas-holder');
+      const speechBubble = document.getElementById('tg-speech-bubble');
+      const crossBtn = document.getElementById('tg-cross-btn');
+      const shockwave = document.getElementById('tg-shockwave');
+      const btnLabel = document.getElementById('tg-btn-label');
+      const timerDisplay = document.getElementById('tg-timer-display');
+
+      let timer = 10;
+      activeInterval = setInterval(() => {
+        timer--;
+        if (timerDisplay) timerDisplay.textContent = Math.max(0, timer) + 's';
+        if (timer <= 0) clearInterval(activeInterval);
+      }, 1000);
+
+      crossBtn.addEventListener('click', () => {
+        crossBtn.classList.add('tg-stomped');
+        shockwave.classList.add('tg-fire-shockwave');
+        btnLabel.textContent = 'CLOSING!';
+        clearInterval(activeInterval);
+        setTimeout(cleanupOverlay, 800);
+      });
+
+      activeStage = new window.TabGuardian3D.MascotStage(canvasHolder);
+      activeStage.loadMascot(mascotType);
+      activeStage.start();
+
+      activeStage.runChoreography({
+        onSpeechStart: () => {
+          if (speechBubble) speechBubble.classList.add('tg-bubble-show');
+        },
+        onSpeechEnd: () => {
+          if (speechBubble) speechBubble.classList.remove('tg-bubble-show');
+        },
+        onButtonClick: () => {
+          if (crossBtn) crossBtn.classList.add('tg-stomped');
+          if (shockwave) shockwave.classList.add('tg-fire-shockwave');
+          if (btnLabel) btnLabel.textContent = 'DONE!';
+        },
+        onFadeOut: (opacity) => {
+          root.style.opacity = opacity;
+        },
+        onComplete: () => {
+          console.log('[Tab Guardian Demo] Choreography complete.');
+          setTimeout(cleanupOverlay, 400);
+        }
+      });
+    }
+
+    function inspectMascot(mascotType, pose) {
+      const root = createOverlayDOM("Be a good person, close that tab!");
+      const canvasHolder = document.getElementById('tg-canvas-holder');
+      const speechBubble = document.getElementById('tg-speech-bubble');
+      const crossBtn = document.getElementById('tg-cross-btn');
+      const shockwave = document.getElementById('tg-shockwave');
+      const btnLabel = document.getElementById('tg-btn-label');
+
+      activeStage = new window.TabGuardian3D.MascotStage(canvasHolder);
+      const mascot = activeStage.loadMascot(mascotType);
+      activeStage.start();
+
+      if (pose === 'speech') {
+        mascot.root.position.set(-1.2, 0, 0);
+        mascot.root.rotation.y = 0; // facing front
+        mascot.head.rotation.x = -0.05;
+        mascot.leftArm.rotation.x = -0.4;
+        mascot.rightArm.rotation.x = -0.5;
+        speechBubble.classList.add('tg-bubble-show');
+      } else if (pose === 'stomp') {
+        mascot.root.position.set(3.2, 0, 0);
+        mascot.root.rotation.y = Math.PI / 3;
+        mascot.rightArm.rotation.x = 0.8;
+        crossBtn.classList.add('tg-stomped');
+        shockwave.classList.add('tg-fire-shockwave');
+        btnLabel.textContent = 'DONE!';
+      }
+
+      const closeNotice = document.createElement('button');
+      closeNotice.textContent = '✕ Dismiss Preview';
+      closeNotice.style.position = 'absolute';
+      closeNotice.style.top = '70px';
+      closeNotice.style.padding = '8px 16px';
+      closeNotice.style.background = '#3c2415';
+      closeNotice.style.color = '#fff';
+      closeNotice.style.border = '1px solid #57331b';
+      closeNotice.style.borderRadius = '20px';
+      closeNotice.style.cursor = 'pointer';
+      closeNotice.onclick = cleanupOverlay;
+      root.appendChild(closeNotice);
+    }
+  </script>
+</body>
+</html>

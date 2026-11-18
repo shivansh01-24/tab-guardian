@@ -1,0 +1,55 @@
+{
+  "manifest_version": 3,
+  "name": "Tab Guardian - 3D Anti-Distraction Mascot",
+  "version": "1.0.0",
+  "description": "3D cartoon mascots walk in, remind you to be a good person, click the close button, and shut down blocked tabs automatically.",
+  "permissions": [
+    "storage",
+    "tabs",
+    "webNavigation"
+  ],
+  "host_permissions": [
+    "*://*/*"
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": [
+        "lib/three.min.js",
+        "scripts/character-engine.js",
+        "content.js"
+      ],
+      "css": [
+        "overlay.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "lib/three.min.js",
+        "scripts/character-engine.js",
+        "overlay.css",
+        "icons/*"
+      ],
+      "matches": ["*://*/*"]
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

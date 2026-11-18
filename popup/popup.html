@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tab Guardian</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-branding">
+        <div class="logo-icon">🛡️</div>
+        <div>
+          <h1 class="title">Tab Guardian</h1>
+          <p class="subtitle">3D Cartoon Anti-Distraction Mascot</p>
+        </div>
+      </div>
+      <label class="switch" title="Toggle Protection">
+        <input type="checkbox" id="master-toggle" checked>
+        <span class="slider"></span>
+      </label>
+    </header>
+
+    <!-- Main Content -->
+    <main class="content">
+      <!-- Mascot Picker Section -->
+      <section class="section">
+        <h2 class="section-title">Active 3D Mascot</h2>
+        <div class="mascot-grid">
+          <label class="mascot-card" data-mascot="random">
+            <input type="radio" name="mascot" value="random" checked>
+            <div class="mascot-card-inner">
+              <span class="mascot-emoji">🎲</span>
+              <span class="mascot-name">Random</span>
+            </div>
+          </label>
+          <label class="mascot-card" data-mascot="robot">
+            <input type="radio" name="mascot" value="robot">
+            <div class="mascot-card-inner">
+              <span class="mascot-emoji">🤖</span>
+              <span class="mascot-name">Robot</span>
+            </div>
+          </label>
+          <label class="mascot-card" data-mascot="detective">
+            <input type="radio" name="mascot" value="detective">
+            <div class="mascot-card-inner">
+              <span class="mascot-emoji">🕵️</span>
+              <span class="mascot-name">Detective</span>
+            </div>
+          </label>
+          <label class="mascot-card" data-mascot="cat">
+            <input type="radio" name="mascot" value="cat">
+            <div class="mascot-card-inner">
+              <span class="mascot-emoji">🐱</span>
+              <span class="mascot-name">Wise Cat</span>
+            </div>
+          </label>
+        </div>
+      </section>
+
+      <!-- Quick Preset Toggles -->
+      <section class="section">
+        <h2 class="section-title">Quick Presets</h2>
+        <div class="presets-list">
+          <div class="preset-item">
+            <div class="preset-info">
+              <span class="preset-icon">📸</span>
+              <span class="preset-label">Instagram (All Pages)</span>
+            </div>
+            <input type="checkbox" class="preset-checkbox" data-pattern="instagram.com">
+          </div>
+          <div class="preset-item">
+            <div class="preset-info">
+              <span class="preset-icon">▶️</span>
+              <span class="preset-label">YouTube Shorts (/shorts/*)</span>
+            </div>
+            <input type="checkbox" class="preset-checkbox" data-pattern="youtube.com/shorts">
+          </div>
+          <div class="preset-item">
+            <div class="preset-info">
+              <span class="preset-icon">🎵</span>
+              <span class="preset-label">TikTok</span>
+            </div>
+            <input type="checkbox" class="preset-checkbox" data-pattern="tiktok.com">
+          </div>
+        </div>
+      </section>
+
+      <!-- Custom Blocklist Section -->
+      <section class="section">
+        <h2 class="section-title">Custom Blocked URLs</h2>
+        <form id="add-url-form" class="url-input-group">
+          <input type="text" id="new-url-input" placeholder="e.g. twitter.com or reddit.com" autocomplete="off" required>
+          <button type="submit" id="add-url-btn" class="btn-primary">Add</button>
+        </form>
+        <ul id="blocked-urls-list" class="url-list">
+          <!-- Dynamically populated -->
+        </ul>
+      </section>
+
+      <!-- Live Test Preview Button -->
+      <div class="actions">
+        <button id="test-preview-btn" class="btn-secondary" title="Watch 3D mascot walk in, click button and vanish on current tab">
+          <span class="btn-icon">✨</span> Test 3D Mascot Preview
+        </button>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <span id="status-msg" class="status-msg">Protected & Active</span>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
